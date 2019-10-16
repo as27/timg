@@ -33,11 +33,10 @@ type Options struct {
 //
 //   // call with default options
 //   img, err := timg.Draw(txt, nil)
-func Draw(s string, opt *Options) (image.Image, error) {
+func Draw(lines []string, opt *Options) (image.Image, error) {
 	if opt == nil {
 		opt = Default()
 	}
-	var lines []string
 	return drawText(lines, nil)
 }
 
