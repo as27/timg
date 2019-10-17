@@ -12,6 +12,8 @@ package timg
 import (
 	"image"
 	"image/color"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/golang/freetype/truetype"
 )
@@ -66,4 +68,28 @@ func Default() *Options {
 		FontColor: color.NRGBA{0, 0, 0, 255},
 		Font:      nil,
 	}
+}
+
+// Wrap generates the lines as a slice, which can be used inside
+// timg.Draw().
+//
+//   img, err := timg.Draw(timg.Wrap(longString, 40), nil)
+//   // ...
+//
+// When creating the lines the words are separated.
+func Wrap(s string, maxCharacters int) []string {
+	words := strings.Split(s, " ")
+	var lines []string
+	charCount := 0
+	lineStart := 0
+	for i, w := range words {
+		charCount += utf8.RuneCountInString(w)
+		if charCount > maxCharacters {
+			lines = append(lines, strings.Join(words[lineStart:i], " "))
+			charCount = utf8.RuneCountInString(w)
+			lineStart = i
+		}
+	}
+	lines = append(lines, strings.Join(words[lineStart:], " "))
+	return lines
 }
