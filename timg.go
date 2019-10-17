@@ -1,6 +1,11 @@
 /*
 Package timg allows you to generate an image. Image from a
 given string.
+There is no encoding included, so you can define the encoding
+for the generated image by yourself.
+You can use a ttf font, which should be loaded into the options
+as []byte. If you not provide own fonts the gomono font
+golang.org/x/image/font/gofont/gomono will be used.
 */
 package timg
 
