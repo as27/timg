@@ -1,12 +1,19 @@
 /*
 Package timg allows you to generate an image. Image from a
 given string.
+There is no encoding included, so you can define the encoding
+for the generated image by yourself.
+You can use a ttf font, which should be loaded into the options
+as []byte. If you not provide own fonts the gomono font
+golang.org/x/image/font/gofont/gomono will be used.
 */
 package timg
 
 import (
 	"image"
 	"image/color"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/golang/freetype/truetype"
 )
@@ -61,4 +68,28 @@ func Default() *Options {
 		FontColor: color.NRGBA{0, 0, 0, 255},
 		Font:      nil,
 	}
+}
+
+// Wrap generates the lines as a slice, which can be used inside
+// timg.Draw().
+//
+//   img, err := timg.Draw(timg.Wrap(longString, 40), nil)
+//   // ...
+//
+// When creating the lines the words are separated.
+func Wrap(s string, maxCharacters int) []string {
+	words := strings.Split(s, " ")
+	var lines []string
+	charCount := 0
+	lineStart := 0
+	for i, w := range words {
+		charCount += utf8.RuneCountInString(w)
+		if charCount > maxCharacters {
+			lines = append(lines, strings.Join(words[lineStart:i], " "))
+			charCount = utf8.RuneCountInString(w)
+			lineStart = i
+		}
+	}
+	lines = append(lines, strings.Join(words[lineStart:], " "))
+	return lines
 }
